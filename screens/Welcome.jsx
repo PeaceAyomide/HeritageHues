@@ -15,6 +15,7 @@ const Welcome = ({ navigation }) => {
         <Text className="text-white text-3xl" style={{ fontFamily }}>
           HeritageHues
         </Text>
+        
       </View>
       
       {/* Continue button fixed at the bottom */}
