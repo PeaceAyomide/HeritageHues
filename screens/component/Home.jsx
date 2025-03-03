@@ -1,3 +1,4 @@
+import Header from './Header'
 import React, { useEffect, useRef, useState } from 'react'
 import { View, Text, ScrollView, Dimensions, Platform, TouchableOpacity, StatusBar, Animated, Modal } from 'react-native'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
@@ -337,14 +338,7 @@ const handleBuyNow = (item) => {
         <ScrollView className="flex-1">
       
        <View className="items-center justify-center gap-3">
-        <View className=" flex-row mt-4 items-center justify-between w-full px-4">
-          <Text className="text-white text-3xl" style={{ fontFamily }}>
-            HeritageHues
-          </Text>
-          <TouchableOpacity hitSlop={40}>
-            <Octicons name="bell" size={25} color="#fff" /></TouchableOpacity>
-
-        </View>
+        <Header/>
        {/* Image Slider Section with container to control width */}
        <View className="px-4 w-full" style={{ marginTop: 20 }}>
           <View style={{ 
