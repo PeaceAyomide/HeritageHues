@@ -3,6 +3,7 @@ import { View, Text, Platform, StatusBar, ScrollView, TextInput, TouchableOpacit
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import Header from './Header';
 import { Feather, Octicons } from '@expo/vector-icons'; // Assuming you're using Expo for icons
+import { useLikes } from '../../context/LikesContext';
 
 // Toast Component
 const Toast = ({ visible, message, onHide }) => {
@@ -260,7 +261,8 @@ const ItemDetailModal = ({ visible, item, onClose }) => {
 const Search = () => {
     const insets = useSafeAreaInsets(); // dynamically retrieves the device's safe area insets
     const [searchQuery, setSearchQuery] = useState('');
-    const [likedItems, setLikedItems] = useState({});
+    // Use the search-specific like functions
+    const { toggleSearchLike, isSearchLiked } = useLikes();
     
 // Modal state for item details
 const [detailModalVisible, setDetailModalVisible] = useState(false);
@@ -270,38 +272,32 @@ const [selectedItem, setSelectedItem] = useState(null);
 const [toastVisible, setToastVisible] = useState(false);
 const [toastMessage, setToastMessage] = useState('');
 
-
-    // Sample suggested clothes data
+    // Sample suggested clothes data with unique IDs
     const suggestedClothes = [
-        { id: 1, name: 'Casual Shirt', category: 'Tops', price: '$19.99', color: '#6A5ACD' },
-        { id: 2, name: 'Slim Fit Jeans', category: 'Bottoms', price: '$34.99', color: '#4169E1' },
-        { id: 3, name: 'Summer Dress', category: 'Dresses', price: '$29.99', color: '#FF69B4' },
-        { id: 4, name: 'Leather Jacket', category: 'Outerwear', price: '$79.99', color: '#8B4513' },
-        { id: 5, name: 'Graphic Tee', category: 'Tops', price: '$14.99', color: '#20B2AA' },
-        { id: 6, name: 'Athletic Shorts', category: 'Bottoms', price: '$24.99', color: '#FF6347' },
+        { id: 'search_1', name: 'Casual Shirt', category: 'Tops', price: '$19.99', color: '#6A5ACD' },
+        { id: 'search_2', name: 'Slim Fit Jeans', category: 'Bottoms', price: '$34.99', color: '#4169E1' },
+        { id: 'search_3', name: 'Summer Dress', category: 'Dresses', price: '$29.99', color: '#FF69B4' },
+        { id: 'search_4', name: 'Leather Jacket', category: 'Outerwear', price: '$79.99', color: '#8B4513' },
+        { id: 'search_5', name: 'Graphic Tee', category: 'Tops', price: '$14.99', color: '#20B2AA' },
+        { id: 'search_6', name: 'Athletic Shorts', category: 'Bottoms', price: '$24.99', color: '#FF6347' },
     ];
 
 // Categories for filtering
 const categories = ['All', 'Tops', 'Bottoms', 'Dresses', 'Outerwear'];
 const [activeCategory, setActiveCategory] = useState('All');
 
-// Toggle like status for an item
-const toggleLike = (itemId) => {
-    const isLiked = !likedItems[itemId];
-    setLikedItems(prev => ({
-        ...prev,
-        [itemId]: isLiked
-    }));
+// Updated toggle like function to use search-specific context function
+const handleToggleLike = (itemId) => {
+    const item = suggestedClothes.find(item => item.id === itemId);
+    toggleSearchLike(item);
     
     // Show toast when liking an item
-    if (isLiked) {
-        // Find the item name from the suggestedClothes array
+    if (!isSearchLiked(itemId)) {
         const item = suggestedClothes.find(item => item.id === itemId);
         setToastMessage(`Added ${item.name} to favorites`);
         setToastVisible(true);
     }
 };
-
 
 // Clear search query
 const clearSearch = () => {
@@ -406,7 +402,7 @@ const handleViewDetails = (item) => {
                                         />
                                         {/* Like button positioned at top right corner */}
                                         <TouchableOpacity 
-                                            onPress={() => toggleLike(item.id)}
+                                            onPress={() => handleToggleLike(item.id)}
                                             style={{
                                                 position: 'absolute',
                                                 top: 8,
@@ -421,9 +417,9 @@ const handleViewDetails = (item) => {
                                             activeOpacity={0.7}
                                         >
                                             <Octicons 
-                                                name={likedItems[item.id] ? "heart-fill" : "heart"} 
+                                                name={isSearchLiked(item.id) ? "heart-fill" : "heart"} 
                                                 size={20} 
-                                                color={likedItems[item.id] ? "#FF4757" : ""} 
+                                                color={isSearchLiked(item.id) ? "#FF4757" : ""} 
                                             />
                                         </TouchableOpacity>
                                         

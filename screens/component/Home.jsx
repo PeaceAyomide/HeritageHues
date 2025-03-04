@@ -2,9 +2,8 @@ import Header from './Header'
 import React, { useEffect, useRef, useState } from 'react'
 import { View, Text, ScrollView, Dimensions, Platform, TouchableOpacity, StatusBar, Animated, Modal } from 'react-native'
 import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
-
 import Octicons from 'react-native-vector-icons/Octicons'
-
+import { useLikes } from '../../context/LikesContext';
 
 // Toast Component
 const Toast = ({ visible, message, onHide }) => {
@@ -242,6 +241,7 @@ const PurchaseModal = ({ visible, item, onClose }) => {
     </Modal>
   );
 };
+
 const Home = () => {
   const insets = useSafeAreaInsets(); // dynamically retrieves the device's safe area insets
   const screenWidth = Dimensions.get('window').width;
@@ -256,40 +256,28 @@ const Home = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   const sliderInterval = 3000; // Slide interval in milliseconds
 
- // Track liked items
- const [likedItems, setLikedItems] = useState({});
+  // Use the home-specific like functions
+  const { toggleHomeLike, isHomeLiked } = useLikes();
 
-// Toast state
-const [toastVisible, setToastVisible] = useState(false);
-const [toastMessage, setToastMessage] = useState('');
+  // Toast state
+  const [toastVisible, setToastVisible] = useState(false);
+  const [toastMessage, setToastMessage] = useState('');
 
-// Purchase modal state
-const [purchaseModalVisible, setPurchaseModalVisible] = useState(false);
-const [purchasedItem, setPurchasedItem] = useState(null);
+  // Purchase modal state
+  const [purchaseModalVisible, setPurchaseModalVisible] = useState(false);
+  const [purchasedItem, setPurchasedItem] = useState(null);
 
-
-// Toggle like status for an item
-const toggleLike = (itemId) => {
-  const isLiked = !likedItems[itemId];
-  setLikedItems(prev => ({
-    ...prev,
-    [itemId]: isLiked
-  }));
-  
-  // Show toast when liking an item
-  if (isLiked) {
-    // Find the item name from the clothesData array
+  // Updated toggle like function to use home-specific context function
+  const handleToggleLike = (itemId) => {
     const item = clothesData.find(item => item.id === itemId);
-    setToastMessage(`Added ${item.name} to favorites`);
-    setToastVisible(true);
-  }
-};
-
-// Handle buy now button click
-const handleBuyNow = (item) => {
-  setPurchasedItem(item);
-  setPurchaseModalVisible(true);
-};
+    toggleHomeLike(item);
+    
+    // Show toast when liking an item
+    if (!isHomeLiked(itemId)) {
+      setToastMessage(`Added ${item.name} to favorites`);
+      setToastVisible(true);
+    }
+  };
 
   // Handle scroll end to update current index
   const handleScroll = (event) => {
@@ -314,77 +302,80 @@ const handleBuyNow = (item) => {
     return () => clearInterval(interval);
   }, [currentIndex, slides.length, sliderWidth]);
 
-
- // Choose different fonts based on platform
+  // Choose different fonts based on platform
   const fontFamily = Platform.OS === 'ios' 
     ? 'Georgia' // iOS font
     : 'sans-serif-condensed'; // Android font
- // Sample clothes data
- const clothesData = [
-  { id: 1, name: 'Summer T-Shirt', price: '$24.99', color: '#FF6B6B' },
-  { id: 2, name: 'Denim Jeans', price: '$49.99', color: '#4ECDC4' },
-  { id: 3, name: 'Casual Hoodie', price: '$39.99', color: '#FFD166' },
-  { id: 4, name: 'Winter Jacket', price: '$89.99', color: '#6B5B95' },
-  { id: 5, name: 'Formal Shirt', price: '$34.99', color: '#45B7D1' },
-  { id: 6, name: 'Cargo Pants', price: '$44.99', color: '#98D4BB' },
-];
 
+  // Sample clothes data with unique IDs
+  const clothesData = [
+    { id: 'home_1', name: 'Summer T-Shirt', price: '$24.99', color: '#FF6B6B' },
+    { id: 'home_2', name: 'Denim Jeans', price: '$49.99', color: '#4ECDC4' },
+    { id: 'home_3', name: 'Casual Hoodie', price: '$39.99', color: '#FFD166' },
+    { id: 'home_4', name: 'Winter Jacket', price: '$89.99', color: '#6B5B95' },
+    { id: 'home_5', name: 'Formal Shirt', price: '$34.99', color: '#45B7D1' },
+    { id: 'home_6', name: 'Cargo Pants', price: '$44.99', color: '#98D4BB' },
+  ];
+
+  // Handle buy now button click
+  const handleBuyNow = (item) => {
+    setPurchasedItem(item);
+    setPurchaseModalVisible(true);
+  };
 
   return (
-   
     <SafeAreaView className="flex-1 bg-[#080020] " style={{  
-         paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : insets.top,
+      paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : insets.top,
     }}>
-        <ScrollView className="flex-1">
-      
-       <View className="items-center justify-center gap-3">
-        <Header/>
-       {/* Image Slider Section with container to control width */}
-       <View className="px-4 w-full" style={{ marginTop: 20 }}>
-          <View style={{ 
-            height: sliderHeight, 
-            width: '100%',
-            borderRadius: 8,
-            overflow: 'hidden' // Ensures content doesn't overflow rounded corners
-          }}>
-            <ScrollView
-              ref={scrollViewRef}
-              horizontal
-              pagingEnabled
-              showsHorizontalScrollIndicator={false}
-              onMomentumScrollEnd={handleScroll}
-              decelerationRate="fast"
-            >
+      <ScrollView className="flex-1">
+        <View className="items-center justify-center gap-3">
+          <Header/>
+          {/* Image Slider Section with container to control width */}
+          <View className="px-4 w-full" style={{ marginTop: 20 }}>
+            <View style={{ 
+              height: sliderHeight, 
+              width: '100%',
+              borderRadius: 8,
+              overflow: 'hidden' // Ensures content doesn't overflow rounded corners
+            }}>
+              <ScrollView
+                ref={scrollViewRef}
+                horizontal
+                pagingEnabled
+                showsHorizontalScrollIndicator={false}
+                onMomentumScrollEnd={handleScroll}
+                decelerationRate="fast"
+              >
+                {slides.map((_, index) => (
+                  <View
+                    key={index}
+                    style={{
+                      width: sliderWidth,
+                      height: sliderHeight,
+                      backgroundColor: slideColors[index]
+                    }}
+                  />
+                ))}
+              </ScrollView>
+            </View>
+
+            {/* Dot Indicators */}
+            <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 8 }}>
               {slides.map((_, index) => (
                 <View
                   key={index}
                   style={{
-                    width: sliderWidth,
-                    height: sliderHeight,
-                    backgroundColor: slideColors[index]
+                    width: 8,
+                    height: 8,
+                    borderRadius: 4,
+                    backgroundColor: index === currentIndex ? '#fff' : 'rgba(255,255,255,0.5)',
+                    marginHorizontal: 3
                   }}
                 />
               ))}
-            </ScrollView>
+            </View>
           </View>
-
-          {/* Dot Indicators */}
-          <View style={{ flexDirection: 'row', justifyContent: 'center', marginTop: 8 }}>
-            {slides.map((_, index) => (
-              <View
-                key={index}
-                style={{
-                  width: 8,
-                  height: 8,
-                  borderRadius: 4,
-                  backgroundColor: index === currentIndex ? '#fff' : 'rgba(255,255,255,0.5)',
-                  marginHorizontal: 3
-                }}
-              />
-            ))}
-          </View>
-        </View>
-      <View className="mt-6">
+          <View className="mt-6">
             <Text className="text-white text-lg mb-3 px-4">
               Clothes On Sale
             </Text>
@@ -407,7 +398,7 @@ const handleBuyNow = (item) => {
                     />
                     {/* Like button positioned at top left corner */}
                     <TouchableOpacity 
-                      onPress={() => toggleLike(item.id)}
+                      onPress={() => handleToggleLike(item.id)}
                       style={{
                         position: 'absolute',
                         top: 8,
@@ -423,9 +414,9 @@ const handleBuyNow = (item) => {
                       activeOpacity={0.7}
                     >
                       <Octicons 
-                        name={likedItems[item.id] ? "heart-fill" : "heart"} 
+                        name={isHomeLiked(item.id) ? "heart-fill" : "heart"} 
                         size={20} 
-                        color={likedItems[item.id] ? "#FF4757" : ""} 
+                        color={isHomeLiked(item.id) ? "#FF4757" : ""} 
                       />
                     </TouchableOpacity>
                     
@@ -446,23 +437,22 @@ const handleBuyNow = (item) => {
               </View>
             </View>
           </View>
-         
         </View>
-        </ScrollView>
+      </ScrollView>
 
-         {/* Toast notification */}
+      {/* Toast notification */}
       <Toast 
         visible={toastVisible} 
         message={toastMessage} 
         onHide={() => setToastVisible(false)} 
       />
-       {/* Purchase success modal */}
-       <PurchaseModal
-          visible={purchaseModalVisible}
-          item={purchasedItem}
-          onClose={() => setPurchaseModalVisible(false)}
-        />
-       </SafeAreaView>
+      {/* Purchase success modal */}
+      <PurchaseModal
+        visible={purchaseModalVisible}
+        item={purchasedItem}
+        onClose={() => setPurchaseModalVisible(false)}
+      />
+    </SafeAreaView>
   )
 }
 

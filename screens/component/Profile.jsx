@@ -1,11 +1,23 @@
-import React from 'react';
-import { View, Text} from 'react-native';
+import Header from './Header'
+import React, { useEffect, useRef, useState } from 'react'
+import { View, Text, ScrollView, Dimensions, Platform, TouchableOpacity, StatusBar, Animated, Modal } from 'react-native'
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import Octicons from 'react-native-vector-icons/Octicons'
+
 
 const Profile = () => {
+    const insets = useSafeAreaInsets(); // dynamically retrieves the device's safe area insets
+ 
     return (
-        <View className="flex-1 justify-center items-center bg-[#080020]" >
-            <Text className="text-white">Profile</Text>
-        </View>
+        <SafeAreaView className="flex-1 bg-[#080020]" style={{
+            paddingTop: Platform.OS === 'android' ? StatusBar.currentHeight : insets.top,
+          }}>
+            <ScrollView className="flex-1">
+              <View className="items-center justify-center gap-3">
+                <Header />
+                </View>
+                </ScrollView>
+      </SafeAreaView>      
     );
 };
 
