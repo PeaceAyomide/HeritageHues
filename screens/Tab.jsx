@@ -56,6 +56,7 @@ const TabNav = () => {
       <Tab.Screen 
         name="Home" 
         component={Home}
+        hitSlop={40}
         options={{
           headerShown: false,
           tabBarIcon: ({ focused, color, size }) => (
@@ -65,6 +66,7 @@ const TabNav = () => {
       />
       <Tab.Screen 
         name="Search" 
+        hitSlop={40}
         component={Search}
         options={{
           headerShown: false,
@@ -75,6 +77,7 @@ const TabNav = () => {
       />
       <Tab.Screen 
         name="Likes" 
+        hitSlop={40}
         component={Likes}
         options={{
           headerShown: false,
@@ -85,6 +88,7 @@ const TabNav = () => {
       />
       <Tab.Screen 
         name="Profile" 
+        hitSlop={40}
         component={Profile}
         options={{
           headerShown: false,
