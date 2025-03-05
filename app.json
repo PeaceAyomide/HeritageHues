@@ -1,25 +1,39 @@
 {
   "expo": {
-    "name": "projectx",
-    "slug": "projectx",
+    "name": "HeritageHues",
+    "slug": "HeritageHues",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./assets/bag-icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "androidStatusBar": {
+      "backgroundColor": "#080020",
+      "barStyle": "light-content",
+      "translucent": false
+    },
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./assets/splashbag.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#080020"
+    },
+    "notification": {
+      "icon": "./assets/bag-icon.png",
+      "color": "#080020",
+      "androidMode": "default",
+      "androidCollapsedTitle": "HeritageHues",
+      "iosDisplayInForeground": true
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.peacexv.projectx"
     },
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      }
+        "foregroundImage": "./assets/bag-icon.png",
+        "backgroundColor": "#080020"
+      },
+      "package": "com.peacexv.projectx"
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -29,11 +43,18 @@
         "projectId": "77995606-2661-4872-a708-bb2396fe8057"
       }
     },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
+    "runtimeVersion": "1.0.0",
     "updates": {
       "url": "https://u.expo.dev/77995606-2661-4872-a708-bb2396fe8057"
-    }
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/bag-icon.png",
+          "color": "#080020"
+        }
+      ]
+    ]
   }
 }

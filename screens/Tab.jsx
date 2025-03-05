@@ -2,24 +2,27 @@ import React from 'react';
 import { Platform, Pressable } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import Icon from 'react-native-vector-icons/Ionicons';
-import { CardStyleInterpolators } from '@react-navigation/stack';
+import { CardStyleInterpolators, createStackNavigator } from '@react-navigation/stack';
 
 // Importing screen components
 import Home from './component/Home';
 import Search from './component/Search';
 import Likes from './component/Likes';
 import Profile from './component/Profile';
+import Notification from './component/Notification';
 
 const Tab = createBottomTabNavigator();
+const Stack = createStackNavigator();
 
-const TabNav = () => {
+// Main Tab Navigator without Notification
+const MainTabNavigator = () => {
   return (
     <Tab.Navigator
       screenOptions={{
         tabBarStyle: {
           backgroundColor: '#080020', 
           borderTopWidth: 0,
-           // Standard height for bottom tabs is typically between 50-60px
+          // Standard height for bottom tabs is typically between 50-60px
           // iOS standard is around 49px, Android material design suggests 56px
           height: Platform.OS === 'ios' ? 60 : 56,
         },
@@ -39,7 +42,7 @@ const TabNav = () => {
             {...props}
             android_ripple={null}
             android_disableSound={true}
-            style={[props.style,  {
+            style={[props.style, {
               // This ensures the icon is centered on both platforms
               justifyContent: 'center',
               alignItems: 'center',
@@ -98,6 +101,22 @@ const TabNav = () => {
         }}
       />
     </Tab.Navigator>
+  );
+};
+
+// Root Stack Navigator that contains both the Tab Navigator and Notification
+const TabNav = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="MainTabs" component={MainTabNavigator} />
+      <Stack.Screen 
+        name="Notification" 
+        component={Notification}
+        options={{
+          cardStyleInterpolator: CardStyleInterpolators.forHorizontalIOS,
+        }}
+      />
+    </Stack.Navigator>
   );
 };
 
